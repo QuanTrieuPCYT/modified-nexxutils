@@ -74,17 +74,17 @@ export default new Module({
       this.patches.add(
         //@ts-expect-error not in RN typings
         before("render", RN.Pressable.type, ([a]) => {
-          if (a.accessibilityLabel === i18n.Messages.CAMERA) {
+          if (a.accessibilityLabel === i18n.Messages.FILES) {
             const disabled = !SpotifyStore.getActivity()?.party?.id;
             a.disabled = disabled;
             a.onPress = sendInvite;
 
             const textComp = findInReactTree(
               a.children,
-              (x) => x?.children === i18n.Messages.CAMERA,
+              (x) => x?.children === i18n.Messages.FILES,
             );
             if (textComp) {
-              textComp.children = "Spotify invite";
+              textComp.children = "Invite";
               textComp.style = [styles.text, disabled && styles.disabledText];
             }
 
