@@ -14,8 +14,12 @@ import { TextStyleSheet } from "$/types";
 
 import { Module, ModuleCategory } from "../stuff/Module";
 
+import { logger } from "@vendetta";
+
 const SpotifyStore = findByStoreName("SpotifyStore");
 const SelectedChannelStore = findByStoreName("SelectedChannelStore");
+const dialog = findByProps("show", "confirm", "close");
+// const actionSheetManager = findByProps("hideActionSheet");
 
 const { sendMessage } = findByProps("sendMessage", "revealMessage");
 const { getText, setText } = findByProps(
@@ -50,6 +54,22 @@ const sendInvite = () => {
   else setText("");
 };
 
+const sendConfirmDialog = () => {
+/*
+const hideASInterval = setInterval(() => actionSheetManager.hideActionSheet(), 100);
+            setTimeout(() => clearInterval(hideASInterval), 3000);
+*/
+dialog.show({
+    title: "Confirmation",
+    body: "Do you want to send a Spotify invite?",
+    confirmText: "Yes",
+    cancelText: "No",
+    confirmColor: "brand",
+    onConfirm: () => { sendInvite(); },
+    // onCancel: () => void clearInterval(hideASInterval)
+});
+};
+
 const styles = stylesheet.createThemedStyleSheet({
   disabledIcon: {
     tintColor: semanticColors.INTERACTIVE_MUTED,
@@ -77,7 +97,7 @@ export default new Module({
           if (a.accessibilityLabel === i18n.Messages.FILES) {
             const disabled = !SpotifyStore.getActivity()?.party?.id;
             a.disabled = disabled;
-            a.onPress = sendInvite;
+            a.onPress = sendConfirmDialog;
 
             const textComp = findInReactTree(
               a.children,
