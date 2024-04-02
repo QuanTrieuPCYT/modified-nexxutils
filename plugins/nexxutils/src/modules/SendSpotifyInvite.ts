@@ -15,6 +15,7 @@ import { TextStyleSheet } from "$/types";
 import { Module, ModuleCategory } from "../stuff/Module";
 
 import { logger } from "@vendetta";
+import { showToast } from "@vendetta/ui/toasts";
 
 const SpotifyStore = findByStoreName("SpotifyStore");
 const SelectedChannelStore = findByStoreName("SelectedChannelStore");
@@ -52,6 +53,7 @@ const sendInvite = () => {
 
   if (setText.length >= 2) setText(channel, "");
   else setText("");
+  showToast("Successfully sent invite!", getAssetIDByName("Check"))
 };
 
 const sendConfirmDialog = () => {
@@ -89,6 +91,14 @@ export default new Module({
   sublabel: "Adds an option to send a Spotify Listen Along invite in chat",
   category: ModuleCategory.Useful,
   icon: getAssetIDByName("ic_spotify_white_16px"),
+  settings: {
+    showDialog: {
+      label: "Show Confirmation Dialog",
+      subLabel: "Shows a confimation dialog before sending the invite.",
+      type: "toggle",
+      default: true,
+    },
+  },
   handlers: {
     onStart() {
       this.patches.add(
@@ -97,7 +107,7 @@ export default new Module({
           if (a.accessibilityLabel === i18n.Messages.FILES) {
             const disabled = !SpotifyStore.getActivity()?.party?.id;
             a.disabled = disabled;
-            a.onPress = sendConfirmDialog;
+            if (this.storage.options.showDialog) a.onPress = sendConfirmDialog; else a.onPress = sendInvite;
 
             const textComp = findInReactTree(
               a.children,
